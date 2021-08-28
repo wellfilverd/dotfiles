@@ -9,6 +9,7 @@ call plug#begin()
 "	Plug 'prabirshrestha/asyncomplete-lsp.vim'
 "	Plug 'clojure-vim/async-clj-omni'
 	Plug 'tpope/vim-surround'
+	Plug 'jiangmiao/auto-pairs'
 	Plug 'tpope/vim-fireplace'
 "	Plug 'tpope/vim-dispatch'
 "	Plug 'tpope/vim-salve'
