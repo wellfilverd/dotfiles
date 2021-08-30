@@ -2,28 +2,24 @@
 call plug#begin('~/.vim/plugged')
 
 call plug#begin()
-  Plug 'preservim/nerdtree'
-"	Plug 'prabirshrestha/vim-lsp'
-"	Plug 'mattn/vim-lsp-settings'
-"	Plug 'prabirshrestha/asyncomplete.vim'
-"	Plug 'prabirshrestha/asyncomplete-lsp.vim'
-"	Plug 'clojure-vim/async-clj-omni'
+	Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
 	Plug 'tpope/vim-surround'
 	Plug 'jiangmiao/auto-pairs'
 	Plug 'tpope/vim-fireplace'
-"	Plug 'tpope/vim-dispatch'
-"	Plug 'tpope/vim-salve'
-"	Plug 'junegunn/fzf'
-"	Plug 'junegunn/fzf.vim'
-	Plug 'kovisoft/paredit'
-"	Plug 'dense-analysis/ale'
-	" Use release branch (recommend)
+	Plug 'junegunn/fzf'
+	Plug 'junegunn/fzf.vim'
+	Plug 'kovisoft/paredit', { 'for': 'clojure' }
 	Plug 'neoclide/coc.nvim', {'branch': 'release'}
 	Plug 'aklt/plantuml-syntax'
+	Plug 'tyru/open-browser.vim'
+	Plug 'weirongxu/plantuml-previewer.vim'
+	Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
+	Plug 'junegunn/fzf.vim'
 call plug#end()
 
 " Language Servers
 let g:coc_global_extensions = ['coc-conjure']
+let g:languagetool_jar='$HOME/languagetool/LanguageTool-5.5-SNAPSHOT/languagetool-commandline.jar'
 
 :let mapleader = ","
 
@@ -42,7 +38,7 @@ syntax on
 :set formatoptions-=cro
 
 " tabulation
-:set tabstop=2 shiftwidth=2 softtabstop=2 noexpandtab
+:set tabstop=2 shiftwidth=2 softtabstop=2 expandtab list!
 
 " default to relative line numbers
 set number
@@ -245,3 +241,6 @@ nnoremap <silent><nowait> <space>k  :<C-u>CocPrev<CR>
 " Resume latest coc list.
 nnoremap <silent><nowait> <space>p  :<C-u>CocListResume<CR>
 
+
+" PlantUML
+au FileType plantuml let g:plantuml_previewer#plantuml_jar_path = get(matchlist(system('cat `which plantuml` | grep plantuml.jar'), '\v.*\s[''"]?(\S+plantuml\.jar).*'),1,0)
