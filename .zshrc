@@ -168,3 +168,5 @@ export PATH="$HOME/bin:$PATH"
 # GPG_TTY
 export GPG_TTY=$(tty)
 export PINENTRY_USER_DATA="USE_CURSES=1"
+# Iced Vim
+export PATH="$PATH:$HOME/.vim/plugged/vim-iced/bin"

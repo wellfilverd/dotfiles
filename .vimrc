@@ -1,21 +1,26 @@
-" Vim Plug
 call plug#begin('~/.vim/plugged')
 
 call plug#begin()
   Plug 'preservim/nerdtree', { 'on': 'NERDTreeToggle' }
   Plug 'tpope/vim-surround'
   Plug 'jiangmiao/auto-pairs'
-  Plug 'tpope/vim-fireplace'
   Plug 'junegunn/fzf', { 'do': { -> fzf#install()  }  }
   Plug 'junegunn/fzf.vim'
-  Plug 'kovisoft/paredit', { 'for': 'clojure' }
+  Plug 'guns/vim-sexp', {'for': 'clojure'}
+  Plug 'liquidz/vim-iced', {'for': 'clojure'}
   Plug 'neoclide/coc.nvim', {'branch': 'release'}
   Plug 'aklt/plantuml-syntax'
   Plug 'tyru/open-browser.vim'
   Plug 'weirongxu/plantuml-previewer.vim'
 call plug#end()
 
+" Leaders mapping
 :let mapleader = ","
+:let maplocalleader = "\\"
+
+" Enable vim-iced's default key mapping
+" This is recommended for newbies
+let g:iced_enable_default_key_mappings = v:true
 
 " Nerd Tree
 nnoremap <leader>n :NERDTreeFocus<CR>
@@ -69,6 +74,17 @@ set undodir=$TMPDIR//
 map <C-c> "*yy
 "map <C-v> "*p
 
+" Vim Sexp
+map <C-j> <Plug>(sexp_swap_list_forward)
+map <C-k> <Plug>(sexp_swap_list_backward)
+map <C-l> <Plug>(sexp_swap_element_forward)
+map <C-h> <Plug>(sexp_swap_element_backward)
+
+map <C-S-j> <Plug>(sexp_emit_head_element)
+map <C-S-k> <Plug>(sexp_emit_tail_element)
+map <C-S-l> <Plug>(sexp_capture_next_element)
+map <C-S-h> <Plug>(sexp_capture_prev_element)
+
 " CocVim
 
 " Use tab for trigger completion with characters ahead and navigate.
@@ -113,6 +129,17 @@ endfunction
 " Highlight the symbol and its references when holding the cursor.
 autocmd CursorHold * silent call CocActionAsync('highlight')
 
+" CodeAction
+" Apply AutoFix to problem on the current line.
+nmap <leader>qf  <Plug>(coc-fix-current)
+
+" Applying codeAction to the selected region.
+" Example: `<leader>aap` for current paragraph
+xmap <leader>a  <Plug>(coc-codeaction-selected)
+nmap <leader>a  <Plug>(coc-codeaction-selected)
+
+" Remap keys for applying codeAction to the current buffer.
+nmap <leader>ac  <Plug>(coc-codeaction)
 " Apply AutoFix to problem on the current line.
 nmap <leader>qf  <Plug>(coc-fix-current)
 
