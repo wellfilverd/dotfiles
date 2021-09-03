@@ -106,7 +106,7 @@ alias gits="git status"
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 
 nud() {
-	cd "$HOME/dev/nu/$1"
+  cd "$HOME/dev/nu/$1"
 }
 
 # Theme
@@ -119,43 +119,44 @@ if [ "$TMUX" = "" ]; then tmux; fi
 setopt rm_star_silent
 
 # Nucli
-if [ -d $HOME/.nurc ]; then 
-	source $HOME/.nurc
+
+if [ -f $HOME/.nurc ]; then 
+  source $HOME/.nurc
 fi
 
 # Sdkman
 export SDKMAN_DIR=$HOME/.sdkman
 export JAVA_HOME=$SDKMAN_DIR/candidates/java/current
 sdk () {
-	if ! [ -x "$(command -v sdk)" ]; then
-		source "$HOME/.sdkman/bin/sdkman-init.sh"
-	fi
-	sdk
+  if ! [ -x "$(command -v sdk)" ]; then
+    source "$HOME/.sdkman/bin/sdkman-init.sh"
+  fi
+  sdk
 }
 
 # Pyenv
 pyenv () {
-	if ! [ -x "$(command -v sdk)" ]; then
-		eval "$(pyenv init --path)"
-	fi
-	pyenv
+  if ! [ -x "$(command -v sdk)" ]; then
+    eval "$(pyenv init --path)"
+  fi
+  pyenv
 }
 
 # Nvm
 export NVM_DIR="$HOME/.nvm"
 nvm () {
-	if ! [ -x "$(command -v nvm)" ]; then
-		[ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
-	fi
-	nvm
+  if ! [ -x "$(command -v nvm)" ]; then
+    [ -s "$(brew --prefix)/opt/nvm/nvm.sh" ] && . "$(brew --prefix)/opt/nvm/nvm.sh"
+  fi
+  nvm
 }
 
 # Rbenv
 rbenv () {
-	if ! [ -x "$(command -v rbenv)" ]; then
-		eval "$(rbenv init -)"
-	fi
-	rbenv
+  if ! [ -x "$(command -v rbenv)" ]; then
+    eval "$(rbenv init -)"
+  fi
+  rbenv
 }
 
 # GOLANG
