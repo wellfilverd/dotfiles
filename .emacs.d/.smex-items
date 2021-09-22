@@ -1,0 +1,25 @@
+
+;; ----- smex-history -----
+(
+ lsp-install-server
+ package-install
+ package-reinstall
+ cider-find-var
+ cider-mode
+ cider-jack-in
+ clipboard-yank
+)
+
+;; ----- smex-data -----
+(
+ (package-install . 7)
+ (package-refresh-contents . 1)
+ (package-list-packages . 1)
+ (clipboard-yank . 1)
+ (cider-jack-in . 1)
+ (cider-mode . 2)
+ (cider-jump-to-locref-at-point . 2)
+ (cider-find-var . 2)
+ (lsp-install-server . 9)
+ (package-reinstall . 1)
+)
