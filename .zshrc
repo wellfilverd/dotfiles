@@ -113,7 +113,7 @@ nud() {
 [ -n "$PS1" ] && sh ~/.nightshell/carbonized-dark
 
 # Spawn tmux at startup
-if [ "$TMUX" = "" ]; then tmux; fi
+# if [ "$TMUX" = "" ]; then tmux; fi
 
 # Disable confirmation delete 'rm *' or 'rm path/*'
 setopt rm_star_silent

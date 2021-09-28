@@ -30,9 +30,15 @@
 (unless (package-installed-p 'evil)
   (package-install 'evil))
 
+;; Evil keybinds
+(setq evil-want-C-u-scroll t)
+
 ;; Enable Evil
 (require 'evil)
 (evil-mode 1)
+
+;; Evil Collection
+(evil-collection-init 'neotree)
 
 ;; Define he following variables to remove the compile-log warnings
 ;; when defining ido-ubiquitous
@@ -47,7 +53,13 @@
 ;; manually with M-x package-install
 ;; Add in your own as you wish:
 (defvar my-packages
-  '(;; makes handling lisp expressions much, much easier
+  '(
+    evil-collection
+
+    ;; Neotree, a file explorer like Nerdtree
+    neotree
+    
+    ;; makes handling lisp expressions much, much easier
     ;; Cheatsheet: http://www.emacswiki.org/emacs/PareditCheatsheet
     paredit
 
@@ -64,10 +76,9 @@
     
     ;; lsp clojure-lsp stuffs
     lsp-mode
-    clojure-mode
-    cider
     lsp-treemacs
-    flycheck
+    ;; for some reason flycheck installation is conflicting with another already installed :O
+    ;; flycheck
     company
 
     ;; allow ido usage in as many contexts as possible. see
@@ -83,19 +94,34 @@
     ;; project navigation
     projectile
 
-    ;; colorful parenthesis matching
-    rainbow-delimiters
-
     ;; edit html tags like sexps
-    tagedit
-
-    ;; git integration
-    magit))
+    tagedit))
 
 ;; add hooks
 (add-hook 'clojure-mode-hook 'lsp)
 (add-hook 'clojurescript-mode-hook 'lsp)
 (add-hook 'clojurec-mode-hook 'lsp)
+
+;; Cider Tests
+(setq cider-test-defining-forms '("deftest" "defspec" "defflow" "defflow-opened-window" "with-synchronous" ))
+
+;; Lsp Keybinds
+
+;; Neotree Keybinds
+(global-set-key (kbd "M-n") (lambda () (interactive) (neotree-toggle)))
+
+;; Neotree Evil mode
+;; (add-hook 'neotree-mode-hook
+          ;; (lambda ()
+            ;; (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+            ;; (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-quick-look)
+            ;; (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+            ;; (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)
+            ;; (define-key evil-normal-state-local-map (kbd "g") 'neotree-refresh)
+            ;; (define-key evil-normal-state-local-map (kbd "n") 'neotree-next-line)
+            ;; (define-key evil-normal-state-local-map (kbd "p") 'neotree-previous-line)
+            ;; (define-key evil-normal-state-local-map (kbd "A") 'neotree-stretch-toggle)
+            ;; (define-key evil-normal-state-local-map (kbd "H") 'neotree-hidden-file-toggle)))
 
 ;; gc cons threshould
 (setq gc-cons-threshold (* 100 1024 1024)
@@ -103,10 +129,20 @@
       treemacs-space-between-root-nodes nil
       company-minimum-prefix-length 1
       lsp-lens-enable t
-      lsp-signature-auto-activate nil
       ; lsp-enable-indentation nil ; uncomment to use cider indentation instead of lsp
       ; lsp-enable-completion-at-point nil ; uncomment to use cider completion instead of lsp
       )
+
+(setq lsp-ui-sideline-show-diagnostics t)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-lens-enable nil)
+(setq lsp-headerline-breadcrumb-enable nil)
+(setq lsp-ui-sideline-show-code-actions nil)
+(setq lsp-ui-sideline-enable nil)
+(setq lsp-modeline-code-actions-enable nil)
+(setq lsp-ui-sideline-enable t)
+(setq lsp-ui-doc-show-with-cursor nil)
+(setq lsp-ui-doc-show-with-mouse nil)
 
 ;; On OS X, an macs instance started from the graphical user
 ;; interface will have a different environment than a shell in a
@@ -184,4 +220,4 @@
  ;; If there is more than one, they won't work right.
  '(coffee-tab-width 2)
  '(package-selected-packages
-   '(magit tagedit rainbow-delimiters projectile smex ido-completing-read+ company flycheck lsp-treemacs lsp-mode cider clojure-mode-extra-font-locking clojure-mode paredit exec-path-from-shell evil)))
+   '(evil-collection lsp-ui magit tagedit rainbow-delimiters projectile smex ido-completing-read+ company flycheck lsp-treemacs lsp-mode cider clojure-mode-extra-font-locking clojure-mode paredit exec-path-from-shell evil)))
