@@ -1,1 +1,0 @@
-("~/.emacs.d/" "~/dev/nu/clojure-noob/" "~/dev/nu/common-http-client/")
