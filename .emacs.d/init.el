@@ -4,7 +4,7 @@
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode)
 
-;; Packages
+;; Install Packages
 (require 'package)
 (setq package-archives
       '(("gnu" . "https://elpa.gnu.org/packages/")
@@ -49,32 +49,16 @@ scan-error if not."
 (add-hook 'clojure-mode-hook #'subword-mode)
 (add-hook 'clojure-mode-hook #'eldoc-mode)
 
+;; Load Packages
+(require 'paredit)
+(require 'clojure-mode)
+
+;; Import system env, like PATH
 (use-package exec-path-from-shell
   :if (memq window-system '(mac ns))
   :config
   (exec-path-from-shell-initialize))
 
-;; clojure mode hook to works with clojure-mode
-;; it bind functions to evaluate clojure forms into inferior-lisp
-;; lambda function evaluates and define keys to customize clojure-mode-map
-;; the bind is require in order to evalute clojure forms
-;; while being into clojure-mode
-;; there are multiple ways to define keys
-;; some are deprecated e.g define-key
-;; instead could use keymap-set
-
-;; example of a custom bind-function for clojure mode with inferior-lisp
-;; bind functions should be a command and have to use interactive to work
-;; (add-hook 'clojure-mode-hook
-;; 	  (lambda ()
-;; 	    (keymap-set
-;; 	     clojure-mode-map
-;; 	     "C-c C-e"
-;; 	     (lambda ()
-;; 	       (interactive)
-;; 	       (message "Hello, Fil!")))))
-(require 'paredit)
-(require 'clojure-mode)
 (eval-after-load 'paredit
   '(progn
      (define-key paredit-mode-map (kbd "M-q") 'paredit-reindent-defun)
@@ -95,7 +79,7 @@ scan-error if not."
      (define-key paredit-mode-map (kbd "<A-return>") 'paredit-newline)))
 (eval-after-load 'clojure-mode
   '(progn
-     (define-key paredit-mode-map (kbd "C-z") 'run-clojure-no-prompt)
+     ;; (define-key paredit-mode-map (kbd "C-z") 'run-clojure-no-prompt)
      (define-key paredit-mode-map (kbd "C-c C-z") 'run-clojure)
      (define-key paredit-mode-map (kbd "C-M-x") 'clj-eval-defun) ;; primary eval command
      (define-key paredit-mode-map (kbd "C-c C-e") 'clj-eval-defun)
@@ -133,43 +117,34 @@ scan-error if not."
       "(str \"%1$s args: \"
             (or (some-> '%1$s resolve meta :arglists)
                 \"Not Found\"))\n")
+
+;; Clojure Inferior Lisp
 (setq inferior-lisp-program "clojure")
 (setq clojure-build-tool-files '("deps.edn"))
 (defvar clj-repl-command)
 (defvar clj-repl-command-history '())
-(defun run-clojure-no-prompt ()
-  (interactive)
-  (if (and (boundp 'clj-repl-command)
-           (stringp (car clj-repl-command)))
-      (run-clojure-command (car clj-repl-command))
-    (run-clojure-command "clojure")))
+
+;;cli
 (defun run-clojure (cmd)
   (interactive (list
                 (if (boundp 'clj-repl-command)
                     (let ((first-command (car clj-repl-command))
                           (rest-commands (if clj-repl-command-history
-                                                                     (append (cdr clj-repl-command) clj-repl-command-history)
-                                                                   (cdr clj-repl-command))))
+                                             (append (cdr clj-repl-command) clj-repl-command-history)
+                                           (cdr clj-repl-command))))
                       (read-from-minibuffer "Command:" first-command nil nil 'rest-commands))
                   (read-from-minibuffer "Command:" "clojure" nil nil 'clj-repl-command-history))))
   (run-clojure-command cmd))
+
+;;run main
 (defun run-clojure-command (cmd)
-  (let* ((dd (if (and (fboundp 'clojure-project-root-path)
-                      (stringp (clojure-project-root-path)))
-                 (clojure-project-root-path)
-               (let ((dir-locals-dir (car (dir-locals-find-file (buffer-file-name)))))
-                 (if dir-locals-dir
-                     dir-locals-dir
-                   default-directory))))
-         (cb (current-buffer))
-         (cmd-exists (executable-find (car (split-string cmd "\s"))))
-         (cmd-to-run (if cmd-exists
-                         cmd
-                       (concat dd cmd))))
-    (add-to-list 'clj-repl-command-history cmd)
-    (run-lisp cmd-to-run)
+  (let* ((cb (current-buffer))
+	 (default-directory (clojure-project-root-path)))
+
+    (run-lisp cmd)
     (switch-to-buffer cb)
     (switch-to-buffer-other-window "*inferior-lisp*")))
+
 ;; Remove this line to disable warnings about unsafe variables when using .dir-locals with 'run-command
 ;; Only use this if you are certain of the integrity of .dir-locals files upstream of where you launch your REPL
 (put 'clj-repl-command 'safe-local-variable (lambda (_) t))
@@ -237,3 +212,17 @@ This strategy avoids a comint string-length limit on macOS that exists at time o
     (goto-char (point-min))
     (while (< (point) (point-max))
       (lisp-eval-form-and-next))))
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(package-selected-packages '(clojure-mode paredit exec-path-from-shell))
+ '(safe-local-variable-values
+   '((clj-environment "AWS_PROFILE=bubbagumpshrimp" "AWS_REGION=us-east-1" "MY_TEST_VAR=1"))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
