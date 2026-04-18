@@ -1,9 +1,7 @@
 ;; Setup Packages
 (require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-;; Comment/uncomment this line to enable MELPA Stable if desired.  See `package-archive-priorities`
-;; and `package-pinned-packages`. Most users will not need or want to do this.
-;;(add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+             '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
 
 ;; Custom Functions
@@ -19,6 +17,7 @@
       (move-end-of-line 1)
       (newline)
       (insert line-text))))
+
 ;;https://stackoverflow.com/questions/3417438/close-all-buffers-besides-the-current-one-in-emacs
 (defun kill-other-buffers ()
   "Kill all other buffers."
@@ -33,18 +32,39 @@
   (split-window-right)  ;; Just what C-x 3 does
   (dired "~/dev/datomic"))              ;; Just what M-x dired does
 
+;; https://emacs.stackexchange.com/questions/46664/switching-between-horizontal-and-vertical-splitting
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
+
 (defun reload-conf ()
   (interactive)
   (load-file "~/.emacs"))
 
-(defun start-clojure-repl ()
-  (interactive)
-  (inf-clojure "~/dev/datomic/git/datomic-enterprise/bin/repl"))
+(defun foo-echo ()
+  (message "echo! this is a message from foo command."))
 
-(defun my-magit-blame ()
-  (interactive)
-  ;; TODO: implement
-  )
 
 ;; Custom keybinding
 
@@ -57,11 +77,37 @@
 ;; open current dirin right buffer
 (global-set-key "\C-c3" 'open-dir-at-right)
 ;; reload emacs conf
-(global-set-key (kbd "C-c R") 'reload-conf)
-;; start clojure repl
-(global-set-key (kbd "C-c rr") 'start-clojure-repl)
-;; magit blame
-(global-set-key (kbd "C-c mb") 'my-magit-blame)
+(global-set-key (kbd "C-c L") 'reload-conf)
+
+;; toggle window split
+(global-set-key (kbd "C-c o") 'toggle-window-split)
+
+;; resize window will repeat if keep holding the keys
+(global-set-key (kbd "C-=") 'enlarge-window-horizontally)
+(global-set-key (kbd "C--") 'shrink-window-horizontally)
+
+;; Global Modes
+(require 'vertico)
+(add-hook 'after-init-hook #'vertico-mode)
+
+;; Web Mode
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+
+(setq-default indent-tabs-mode nil)
+
+(defun my-web-mode-hook ()
+  "Hooks for Web mode."
+  (setq web-mode-markup-indent-offset 2)
+)
+(add-hook 'web-mode-hook  'my-web-mode-hook)
 
 
 ;; Backup files
@@ -97,16 +143,24 @@
 
 ;; Globals
 (global-display-line-numbers-mode 1)
+(setq-default tab-width 2)
+(setq inf-clojure-custom-startup nil)
+(setq inf-clojure-custom-startup "clojure")
+(setq inf-clojure-custom-startup "clojure -A:dev")
+(setq inf-clojure-custom-startup "clojure -M:dev:morse")
+(setq inf-clojure-custom-repl-type 'clojure)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(custom-enabled-themes '(tsdh-light))
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-buffer-menu nil)
  '(inhibit-startup-screen t)
- '(package-selected-packages '(dumb-jump cider inf-clojure clojure-mode magit paredit))
+ '(package-selected-packages
+   '(inf-clojure vertico web-mode dumb-jump cider clojure-mode magit paredit))
  '(ring-bell-function 'ignore)
  '(tab-bar-mode t)
  '(tool-bar-mode nil))
